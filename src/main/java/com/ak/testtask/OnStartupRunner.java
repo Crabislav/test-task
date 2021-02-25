@@ -33,8 +33,12 @@ public class OnStartupRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        while (true){
-//            saveSymbolsToDatabase();
+        while (true) {
+            saveSymbolsToDatabase();
+            System.out.println("Top highest value stocks\n" +
+                    symbolRepository.findTopHighestValueStocks());
+            System.out.println("Top companies by income\n" +
+                    symbolRepository.findTopRecentWithGreatestIncome());
             Thread.sleep(executionDelay * 1000);
         }
     }
