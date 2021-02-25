@@ -20,10 +20,10 @@ public class OnStartupRunner implements CommandLineRunner {
 
     //todo make as properties
     private String stockUrl = "https://sandbox.iexapis.com/stable/stock/";
-    private String symbolsInfoUrl = "https://sandbox.iexapis.com/stable/ref-data/symbols?token=Tpk_ee567917a6b640bb8602834c9d30e571";
     private String token = "Tpk_ee567917a6b640bb8602834c9d30e571";
+    private String symbolsInfoUrl = "https://sandbox.iexapis.com/stable/ref-data/symbols?token=" + token;
     //in seconds
-    private long executionDelay = 5;
+    private long executionDelay = 10;
 
     @Autowired
     public OnStartupRunner(RestTemplate restTemplate, SymbolRepository symbolRepository) {
