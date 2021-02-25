@@ -24,6 +24,9 @@ public class OnStartupRunner implements CommandLineRunner {
     private String symbolsInfoUrl = "https://sandbox.iexapis.com/stable/ref-data/symbols?token=Tpk_ee567917a6b640bb8602834c9d30e571";
     private String token = "Tpk_ee567917a6b640bb8602834c9d30e571";
 
+    //seconds
+    private long executionDelay = 5 ;
+
     @Autowired
     public OnStartupRunner(RestTemplate restTemplate, SymbolRepository symbolRepository) {
         this.restTemplate = restTemplate;
@@ -32,7 +35,10 @@ public class OnStartupRunner implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        saveSymbolsToDatabase();
+        while (true){
+//            saveSymbolsToDatabase();
+            Thread.sleep(executionDelay * 1000);
+        }
     }
 
     //todo refactor
