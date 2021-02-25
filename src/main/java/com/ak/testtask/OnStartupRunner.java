@@ -72,7 +72,7 @@ public class OnStartupRunner implements CommandLineRunner {
         }
 
         for (JsonNode element : responseNode) {
-            if (element.get("isEnabled").asBoolean()) {
+            if (element != null && element.get("isEnabled").asBoolean()) {
                 enabledSymbols.add(element.get("symbol").asText());
             }
         }
