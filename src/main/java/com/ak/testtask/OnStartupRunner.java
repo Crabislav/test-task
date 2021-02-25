@@ -73,10 +73,22 @@ public class OnStartupRunner implements CommandLineRunner {
             return Collections.emptyList();
         }
 
+//        //todo remove
+//        int count = 0;
+
         for (JsonNode element : responseNode) {
+
+            //todo remove
+//            if (count > 7) {
+//                break;
+//            }
+
             if (element != null && element.get("isEnabled").asBoolean()) {
                 enabledSymbols.add(element.get("symbol").asText());
             }
+
+            //todo remove
+//            count++;
         }
         return enabledSymbols;
     }
