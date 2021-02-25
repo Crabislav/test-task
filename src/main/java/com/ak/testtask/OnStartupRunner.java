@@ -56,10 +56,8 @@ public class OnStartupRunner implements CommandLineRunner {
             try {
                 symbol = restTemplate.getForObject(requestUrl, Symbol.class);
                 if (symbol != null) {
-                    //todo m/b replace with custom method - "saveList"
                     symbolRepository.save(symbol);
                 }
-
             } catch (HttpClientErrorException.NotFound | HttpClientErrorException.BadRequest e) {
                 //todo add log error or something else
             }
