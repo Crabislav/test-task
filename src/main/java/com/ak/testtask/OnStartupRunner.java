@@ -4,14 +4,13 @@ import com.ak.testtask.model.Symbol;
 import com.ak.testtask.repositories.SymbolRepository;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Collections;
 import java.util.List;
 
 @Component
@@ -23,9 +22,8 @@ public class OnStartupRunner implements CommandLineRunner {
     private String stockUrl = "https://sandbox.iexapis.com/stable/stock/";
     private String symbolsInfoUrl = "https://sandbox.iexapis.com/stable/ref-data/symbols?token=Tpk_ee567917a6b640bb8602834c9d30e571";
     private String token = "Tpk_ee567917a6b640bb8602834c9d30e571";
-
-    //seconds
-    private long executionDelay = 5 ;
+    //in seconds
+    private long executionDelay = 5;
 
     @Autowired
     public OnStartupRunner(RestTemplate restTemplate, SymbolRepository symbolRepository) {
@@ -70,7 +68,6 @@ public class OnStartupRunner implements CommandLineRunner {
                 enabledSymbols.add(element.get("symbol").asText());
             }
         }
-
         return enabledSymbols;
     }
 
