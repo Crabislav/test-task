@@ -41,16 +41,24 @@ public class OnStartupRunner implements CommandLineRunner {
 
     //todo refactor
     private void saveSymbolsToDatabase() {
-
         List<String> enabledSymbols = getEnabledSymbols();
 
         String requestUrl;
+        Symbol symbol;
+
         for (String enabledSymbol : enabledSymbols) {
             requestUrl = stockUrl + enabledSymbol + "/quote?token=" + token;
-            Symbol symbol = restTemplate.getForObject(requestUrl, Symbol.class);
 
-            //todo m/b replace with custom method - "saveList"
-            symbolRepository.save(symbol);
+            try {
+                symbol = restTemplate.getForObject(requestUrl, Symbol.class);
+                if (symbol != null) {
+                    //todo m/b replace with custom method - "saveList"
+                    symbolRepository.save(symbol);
+                }
+
+            } catch (HttpClientErrorException.NotFound | HttpClientErrorException.BadRequest e) {
+                //todo add log error or something else
+            }
         }
     }
 
