@@ -54,6 +54,6 @@ CREATE TABLE symbols
     week_52_high             DOUBLE PRECISION,
     week_52_low              DOUBLE PRECISION,
     ytd_change              DOUBLE PRECISION,
-    last_trade_Time          BIGINT,
+    last_trade_time          BIGINT,
     is_us_market_open         BOOLEAN
 )
