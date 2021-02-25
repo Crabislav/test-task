@@ -90,6 +90,7 @@ public interface SymbolRepository extends JpaRepository<Symbol, Long> {
             "       open_source,\n" +
             "       close,\n" +
             "       close_time,\n" +
+            "       close_source,\n" +
             "       high,\n" +
             "       high_time,\n" +
             "       high_source,\n" +
