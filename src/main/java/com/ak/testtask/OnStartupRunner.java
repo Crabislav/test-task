@@ -62,7 +62,7 @@ public class OnStartupRunner implements CommandLineRunner {
         List<String> enabledSymbols = new ArrayList<>();
 
         if (responseNode == null) {
-            //todo throw exception
+            return Collections.emptyList();
         }
 
         for (JsonNode element : responseNode) {
