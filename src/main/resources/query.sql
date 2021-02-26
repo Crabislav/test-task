@@ -1,3 +1,9 @@
+WITH comp_stock_with_rows_counter AS (
+    SELECT *,
+           row_number()
+           OVER (PARTITION BY company_name order by latest_update DESC ) as updated_row
+    FROM symbols
+)
 SELECT id,
        symbol,
        company_name,
@@ -54,12 +60,8 @@ SELECT id,
        ytd_change,
        last_trade_time,
        is_us_market_open
-FROM (
-         SELECT *,
-                row_number()
-                OVER (PARTITION BY company_name order by latest_update DESC ) as last_updated_value
-         FROM symbols
-     ) as result
-WHERE last_updated_value = 1
-ORDER BY COALESCE(previous_volume, volume) DESC, company_name
+FROM comp_stock_with_rows_counter
+WHERE updated_row = 1
+ORDER BY COALESCE(volume, previous_volume) DESC,
+         company_name
 LIMIT 5;

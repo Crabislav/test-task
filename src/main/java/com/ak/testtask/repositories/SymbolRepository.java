@@ -12,7 +12,13 @@ public interface SymbolRepository extends JpaRepository<Symbol, Long> {
 
     //todo use as named query
     @Query(nativeQuery = true,
-            value = "SELECT id,\n" +
+            value = "WITH comp_stock_with_rows_counter AS (\n" +
+                    "    SELECT *,\n" +
+                    "           row_number()\n" +
+                    "           OVER (PARTITION BY company_name order by latest_update DESC ) as updated_row\n" +
+                    "    FROM symbols\n" +
+                    ")\n" +
+                    "SELECT id,\n" +
                     "       symbol,\n" +
                     "       company_name,\n" +
                     "       primary_exchange,\n" +
@@ -68,14 +74,10 @@ public interface SymbolRepository extends JpaRepository<Symbol, Long> {
                     "       ytd_change,\n" +
                     "       last_trade_time,\n" +
                     "       is_us_market_open\n" +
-                    "FROM (\n" +
-                    "         SELECT *,\n" +
-                    "                row_number()\n" +
-                    "                OVER (PARTITION BY company_name order by latest_update DESC ) as last_updated_value\n" +
-                    "         FROM symbols\n" +
-                    "     ) as result\n" +
-                    "WHERE last_updated_value = 1\n" +
-                    "ORDER BY COALESCE(previous_volume, volume) DESC, company_name\n" +
+                    "FROM comp_stock_with_rows_counter\n" +
+                    "WHERE updated_row = 1\n" +
+                    "ORDER BY COALESCE(volume, previous_volume) DESC,\n" +
+                    "         company_name\n" +
                     "LIMIT 5;")
     List<Symbol> findTopHighestValueStocks();
 
