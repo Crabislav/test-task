@@ -52,14 +52,9 @@ public class OnStartupRunner implements CommandLineRunner {
 
         for (String enabledSymbol : enabledSymbols) {
             requestUrl = stockUrl + enabledSymbol + "/quote?token=" + token;
-
-            try {
-                symbol = restTemplate.getForObject(requestUrl, Symbol.class);
-                if (symbol != null) {
-                    symbolRepository.save(symbol);
-                }
-            } catch (HttpClientErrorException.NotFound | HttpClientErrorException.BadRequest e) {
-                //todo add log error or something else
+            symbol = restTemplate.getForObject(requestUrl, Symbol.class);
+            if (symbol != null) {
+                symbolRepository.save(symbol);
             }
         }
     }
