@@ -1,3 +1,17 @@
+WITH companies_by_last_update_with_income AS (
+    WITH curr_prev_price_by_latest_update AS (
+        SELECT *,
+               row_number()
+               OVER (PARTITION BY company_name order by latest_update DESC ) as updated_row,
+               lead(latest_price, 1)
+               OVER (PARTITION BY company_name order by latest_update DESC)  as prev_price
+        FROM symbols
+    )
+    SELECT *,
+           latest_price / prev_price as income
+    FROM curr_prev_price_by_latest_update
+    WHERE updated_row = 1
+)
 SELECT id,
        symbol,
        company_name,
@@ -53,16 +67,6 @@ SELECT id,
        ytd_change,
        last_trade_time,
        is_us_market_open
-FROM (
-         WITH curr_prev_price_by_latest_update AS (
-             SELECT *,
-                    lag(latest_price, 1) OVER (PARTITION BY company_name order by latest_update DESC) as prev_price,
-                    row_number() OVER (PARTITION BY company_name order by latest_update DESC )        as last_updated_value
-             FROM symbols)
-         SELECT
-                     latest_price / prev_price  - 1 as income,
-                     *
-         FROM curr_prev_price_by_latest_update
-         WHERE last_updated_value = 2
-         ORDER BY income DESC) AS result
+FROM companies_by_last_update_with_income
+ORDER BY income DESC
 LIMIT 5;

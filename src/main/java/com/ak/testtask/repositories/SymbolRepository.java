@@ -80,7 +80,22 @@ public interface SymbolRepository extends JpaRepository<Symbol, Long> {
     List<Symbol> findTopHighestValueStocks();
 
 
-    @Query(nativeQuery = true, value = "SELECT id,\n" +
+    @Query(nativeQuery = true,
+            value = "WITH companies_by_last_update_with_income AS (\n" +
+            "    WITH curr_prev_price_by_latest_update AS\n" +
+            "             (SELECT *,\n" +
+            "                     row_number()\n" +
+            "                     OVER (PARTITION BY company_name order by latest_update DESC ) as updated_row,\n" +
+            "                     lead(latest_price, 1)\n" +
+            "                     OVER (PARTITION BY company_name order by latest_update DESC)  as prev_price\n" +
+            "              FROM symbols\n" +
+            "             )\n" +
+            "    SELECT *,\n" +
+            "           latest_price / prev_price as income\n" +
+            "    FROM curr_prev_price_by_latest_update\n" +
+            "    WHERE updated_row = 1\n" +
+            ")\n" +
+            "SELECT id,\n" +
             "       symbol,\n" +
             "       company_name,\n" +
             "       primary_exchange,\n" +
@@ -90,7 +105,6 @@ public interface SymbolRepository extends JpaRepository<Symbol, Long> {
             "       open_source,\n" +
             "       close,\n" +
             "       close_time,\n" +
-            "       close_source,\n" +
             "       high,\n" +
             "       high_time,\n" +
             "       high_source,\n" +
@@ -136,18 +150,8 @@ public interface SymbolRepository extends JpaRepository<Symbol, Long> {
             "       ytd_change,\n" +
             "       last_trade_time,\n" +
             "       is_us_market_open\n" +
-            "FROM (\n" +
-            "         WITH curr_prev_price_by_latest_update AS (\n" +
-            "             SELECT *,\n" +
-            "                    lag(latest_price, 1) OVER (PARTITION BY company_name order by latest_update DESC) as prev_price,\n" +
-            "                    row_number() OVER (PARTITION BY company_name order by latest_update DESC )        as last_updated_value\n" +
-            "             FROM symbols)\n" +
-            "         SELECT\n" +
-            "                     latest_price / prev_price  - 1 as income,\n" +
-            "                     *\n" +
-            "         FROM curr_prev_price_by_latest_update\n" +
-            "         WHERE last_updated_value = 2\n" +
-            "         ORDER BY income DESC) AS result\n" +
+            "FROM companies_by_last_update_with_income\n" +
+            "ORDER BY income DESC\n" +
             "LIMIT 5;")
     List<Symbol> findTopRecentWithGreatestIncome();
 }
