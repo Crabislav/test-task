@@ -1,6 +1,6 @@
 package com.ak.testtask.config;
 
-import com.ak.testtask.RestTemplateErrorHandler;
+import com.ak.testtask.exceptionhandlers.RestTemplateErrorHandler;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

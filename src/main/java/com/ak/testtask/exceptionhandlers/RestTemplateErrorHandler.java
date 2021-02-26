@@ -1,4 +1,4 @@
-package com.ak.testtask;
+package com.ak.testtask.exceptionhandlers;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.client.ClientHttpResponse;
