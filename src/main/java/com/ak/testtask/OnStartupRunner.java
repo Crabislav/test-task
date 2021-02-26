@@ -2,16 +2,16 @@ package com.ak.testtask;
 
 import com.ak.testtask.model.Symbol;
 import com.ak.testtask.repositories.SymbolRepository;
-import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Component
 public class OnStartupRunner implements CommandLineRunner {
@@ -61,31 +61,17 @@ public class OnStartupRunner implements CommandLineRunner {
 
     //todo refactor
     private List<String> getEnabledSymbols() {
-        JsonNode responseNode = restTemplate.getForObject(symbolsInfoUrl, JsonNode.class);
-        List<String> enabledSymbols = new ArrayList<>();
+        ArrayNode responseNode = restTemplate.getForObject(symbolsInfoUrl, ArrayNode.class);
 
         if (responseNode == null) {
             return Collections.emptyList();
         }
 
-//        //todo remove
-//        int count = 0;
-
-        for (JsonNode element : responseNode) {
-
-            //todo remove
-//            if (count > 7) {
-//                break;
-//            }
-
-            if (element != null && element.get("isEnabled").asBoolean()) {
-                enabledSymbols.add(element.get("symbol").asText());
-            }
-
-            //todo remove
-//            count++;
-        }
-        return enabledSymbols;
+        return StreamSupport.stream(responseNode.spliterator(), false)
+                .filter(element -> element.get("isEnabled").asBoolean())
+                .map(element -> element.get("symbol").asText())
+                .limit(5) //todo remove limit
+                .collect(Collectors.toList());
     }
 
 }
