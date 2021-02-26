@@ -43,23 +43,15 @@ public class OnStartupRunner implements CommandLineRunner {
         }
     }
 
-    //todo refactor
     private void saveSymbolsToDatabase() {
-        List<String> enabledSymbols = getEnabledSymbols();
-
-        String requestUrl;
-        Symbol symbol;
-
-        for (String enabledSymbol : enabledSymbols) {
-            requestUrl = stockUrl + enabledSymbol + "/quote?token=" + token;
-            symbol = restTemplate.getForObject(requestUrl, Symbol.class);
-            if (symbol != null) {
-                symbolRepository.save(symbol);
-            }
-        }
+        getEnabledSymbols().forEach(symbolName -> {
+            String requestUrl = stockUrl + symbolName + "/quote?token=" + token;
+            Symbol symbol = restTemplate.getForObject(requestUrl, Symbol.class);
+            Optional.ofNullable(symbol)
+                    .ifPresent(s -> symbolRepository.save(s));
+        });
     }
 
-    //todo refactor
     private List<String> getEnabledSymbols() {
         ArrayNode responseNode = restTemplate.getForObject(symbolsInfoUrl, ArrayNode.class);
 
